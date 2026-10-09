@@ -20,7 +20,7 @@ Requisitos: [Git](https://git-scm.com/) y [uv](https://docs.astral.sh/uv/). uv i
 git clone git@github.com:TU-USUARIO/ml-course.git   # tu fork
 cd ml-course
 uv sync
-uv run python scripts/download_data.py   # 🚧 en desarrollo
+uv run python scripts/download_data.py
 uv run --with jupyter jupyter lab
 ```
 

@@ -115,11 +115,23 @@ Para salir del entorno: `deactivate`.
 
 ### 6. Descargar los datos
 
-> 🚧 **En desarrollo.** El script `scripts/download_data.py` todavía no está disponible. Esta sección se actualizará cuando lo esté.
+Desde la raíz del repo:
 
 ```bash
 uv run python scripts/download_data.py
 ```
+
+El script descarga (o genera) los datasets del curso y los guarda como CSV en `data/`:
+
+| Archivo | Origen | Para qué |
+|---|---|---|
+| `viviendas.csv` | sintético | Introducción a pandas |
+| `viviendas_sucio.csv` | sintético | Limpieza de datos (las mismas viviendas, con errores a propósito) |
+| `titanic.csv`, `penguins.csv`, `tips.csv` | seaborn | Exploración y limpieza de datos reales |
+| `iris.csv`, `breast_cancer.csv` | scikit-learn | Clasificación |
+| `california_housing.csv` | scikit-learn | Regresión |
+
+Necesita conexión a internet. Puedes ejecutarlo todas las veces que quieras: vuelve a crear los archivos.
 
 Los datos se guardan en `data/`. Esa carpeta está en el `.gitignore`, así que los datasets **no** se suben al repositorio.
 
@@ -167,7 +179,7 @@ Ejecuta esta celda al inicio del notebook:
 !pip install -q uv
 !uv pip install --system -q -r pyproject.toml
 
-# Descarga los datos (🚧 en desarrollo)
+# Descarga los datos
 !python scripts/download_data.py
 ```
 
