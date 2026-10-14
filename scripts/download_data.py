@@ -50,13 +50,25 @@ def generar_viviendas():
 def generar_viviendas_sucio():
     """Las mismas viviendas con errores a propósito, para practicar la limpieza de datos.
 
-    Tiene valores faltantes, filas duplicadas, texto inconsistente y errores
-    de tipeo en el precio, como los datos reales.
+    Tiene valores faltantes, filas duplicadas, texto inconsistente, precios
+    guardados como texto y errores de tipeo en el precio, como los datos reales.
+    Además añade dos columnas para practicar transformaciones: una muy
+    asimétrica (distancia_metro_m) y una categórica ordinal (estado).
     """
     datos = generar_viviendas()
-    rng = np.random.default_rng(7)
     n = len(datos)
 
+    # Columnas extra
+    rng_extra = np.random.default_rng(11)
+    mediana_distancia = datos["barrio"].map({"Centro": 300, "Norte": 900, "Sur": 1500, "Este": 1100, "Oeste": 1200})
+    datos["distancia_metro_m"] = (mediana_distancia * rng_extra.lognormal(0, 0.8, n)).round()
+    deterioro = datos["antiguedad"] + rng_extra.normal(0, 12, n)
+    datos["estado"] = pd.cut(deterioro, bins=[-np.inf, 15, 40, np.inf], labels=["como nuevo", "buen estado", "a reformar"]).astype(str)
+    datos = datos[["id", "fecha_venta", "barrio", "metros", "habitaciones", "antiguedad",
+                   "garaje", "estado", "distancia_metro_m", "precio"]]
+
+    # Ensuciamos los datos como en la vida real
+    rng = np.random.default_rng(7)
     datos.loc[rng.choice(n, 30, replace=False), "metros"] = np.nan
     datos.loc[rng.choice(n, 20, replace=False), "antiguedad"] = np.nan
     datos.loc[rng.choice(n, 8, replace=False), "barrio"] = np.nan
@@ -64,6 +76,10 @@ def generar_viviendas_sucio():
     datos.loc[idx[:10], "barrio"] = datos.loc[idx[:10], "barrio"].str.upper()
     datos.loc[idx[10:], "barrio"] = "  " + datos.loc[idx[10:], "barrio"].str.lower() + " "
     datos.loc[rng.choice(n, 4, replace=False), "precio"] *= 10       # errores de tipeo
+    datos.loc[rng_extra.choice(n, 15, replace=False), "estado"] = np.nan
+    datos["precio"] = datos["precio"].astype(object)                  # algunos precios como texto: "$245,000"
+    idx_texto = rng_extra.choice(n, 20, replace=False)
+    datos.loc[idx_texto, "precio"] = [f"${p:,.0f}" for p in datos.loc[idx_texto, "precio"]]
     datos = pd.concat([datos, datos.sample(12, random_state=1)])      # filas duplicadas
     datos = datos.sample(frac=1, random_state=2)                      # desordenar
     return datos
